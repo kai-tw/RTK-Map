@@ -11,17 +11,7 @@
 	let prevClickedMarker = null;
 	
 	/* ID card odd or even */
-	
-	let today = new Date();
-	if (today.getDay() === 0) {
-		document.getElementById("limitText").innerText = "無限制";
-	}
-	else if (today.getDay() % 2 === 1) {
-		document.getElementById("limitText").innerText = "單號";
-	}
-	else {
-		document.getElementById("limitText").innerText = "雙號";
-	}
+	oddEvenUpdator();
 	
 	/* Load leaflet script from CDN */
 	let script = document.createElement("script");
@@ -77,6 +67,7 @@
 				
 				/* Periodic update */
 				window.setInterval(function() {
+					oddEvenUpdator();
 					let client = new XMLHttpRequest();
 					client.addEventListener("load", function() {
 						if (client.readyState == 4 && client.status == 200) {
@@ -167,5 +158,17 @@ function markerColorDecision(feature) {
 	}
 	else {
 		return "#e91e3a";
+	}
+}
+function oddEvenUpdator() {
+	let today = new Date();
+	if (today.getDay() === 0) {
+		document.getElementById("limitText").innerText = "無限制";
+	}
+	else if (today.getDay() % 2 === 1) {
+		document.getElementById("limitText").innerText = "單號";
+	}
+	else {
+		document.getElementById("limitText").innerText = "雙號";
 	}
 }
