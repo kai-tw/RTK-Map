@@ -149,7 +149,7 @@ function markerColorDecision(feature) {
 	if (feature.properties.stock >= 0.5 * DAILY_MAX_STOCK) {
 		return "#107879";
 	}
-	else if (feature.stock >= 0.2 * DAILY_MAX_STOCK) {
+	else if (feature.properties.stock >= 0.2 * DAILY_MAX_STOCK) {
 		return "#e67f22";
 	}
 	else {
