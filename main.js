@@ -102,12 +102,12 @@
 							});
 						}
 					});
-					client.open("get", "//kai-tw.herokuapp.com/RTK-Map/fetch.php");
+					client.open("get", "fetch.php");
 					client.send();
 				}, 30 * 1000);
 			}
 		});
-		xhr.open("get", "//kai-tw.herokuapp.com/RTK-Map/fetch.php");
+		xhr.open("get", "fetch.php");
 		xhr.send();
 		
 		/* Buttons event listener binding */
