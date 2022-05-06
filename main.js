@@ -1,14 +1,21 @@
 "use strict";
 (function(){
 	/* Constant */
+	const DEFAULT_ZOOM = 7;
 	const DEFAULT_WEIGHT = 3;
-	const DEFAULT_RADIUS = 15;
+	const DEFAULT_RADIUS_BASE = 1.2;
 	const FOCUS_WEIGHT = 5;
-	const FOCUS_RADIUS = 20;
 	const FOCUS_COLOR = "#351932";
+	const FOCUS_RADIUS_RATIO = 1.5;
+	
+	/* Dom */
+	let info = document.getElementById("info");
 	
 	/* State var define */
-	let prevClickedMarker = null;
+	let clickedMarker = null;
+	let mapZoomLvl = DEFAULT_ZOOM;
+	let defaultRadius = mapZoomLvl;
+	let focusRadius = defaultRadius * FOCUS_RADIUS_RATIO;
 	
 	/* ID card odd or even */
 	oddEvenUpdator();
@@ -24,7 +31,9 @@
 			preferCanvas: true,
 			zoomControl: false,
 			center: [23.973875, 120.982024],
-			zoom: 7,
+			zoom: mapZoomLvl,
+			zoomDelta: 0.25,
+			zoomSnap: 0,
 			minZoom: 6,
 			maxZoom: 18,
 			maxBounds: L.latLngBounds(L.latLng(16, 111), L.latLng(30, 131))
@@ -41,7 +50,7 @@
 						/* Define the style of markers */
 						let markerOption = {
 							alt: feature.properties.name,
-							radius: DEFAULT_RADIUS,
+							radius: defaultRadius,
 							color: markerColorDecision(feature),
 							fillColor: markerColorDecision(feature),
 							weight: DEFAULT_WEIGHT,
@@ -55,11 +64,12 @@
 								info.classList.add("show");
 							}
 							info.dataset.pharmacyId = event.target.feature.properties.id;
-							if (prevClickedMarker) {
-								prevClickedMarker.setStyle({color: markerColorDecision(prevClickedMarker.feature), radius: DEFAULT_RADIUS, weight: DEFAULT_WEIGHT});
+							if (clickedMarker) {
+								clickedMarker.setStyle({color: markerColorDecision(clickedMarker.feature), radius: defaultRadius, weight: DEFAULT_WEIGHT});
 							}
-							event.target.setStyle({color: FOCUS_COLOR, radius: FOCUS_RADIUS, weight: FOCUS_WEIGHT});
-							prevClickedMarker = event.target;
+							event.target.setStyle({color: FOCUS_COLOR, radius: focusRadius, weight: FOCUS_WEIGHT});
+							event.target.bringToFront();
+							clickedMarker = event.target;
 						});
 						return marker;
 					}
@@ -72,7 +82,6 @@
 					client.addEventListener("load", function() {
 						if (client.readyState == 4 && client.status == 200) {
 							let data = JSON.parse(client.responseText);
-							let info = document.getElementById("info");
 							let tags = ["address", "phone", "brand", "stock", "updateTime", "note"];
 							/* Information panel update */
 							if (info.dataset.pharmacyId) {
@@ -109,6 +118,23 @@
 					client.open("get", "fetch.php");
 					client.send();
 				}, 30 * 1000);
+				
+				/* Zoom event listener */
+				map.on("zoomend", function(event) {
+					console.log(defaultRadius);
+					mapZoomLvl = event.target._zoom;
+					defaultRadius = mapZoomLvl;
+					focusRadius = defaultRadius * FOCUS_RADIUS_RATIO;
+					map.eachLayer(function(layer) {
+						if (layer.feature) {
+							layer.setStyle({radius: defaultRadius});
+						}
+					});
+					if (clickedMarker) {
+						clickedMarker.setStyle({radius: focusRadius});
+						clickedMarker.bringToFront();
+					}
+				});
 			}
 		});
 		xhr.open("get", "fetch.php");
@@ -116,13 +142,12 @@
 		
 		/* Buttons event listener binding */
 		document.getElementById("infoPanelClose").addEventListener("click", function() {
-			let info = document.getElementById("info");
 			if (info.classList.contains("show")) {
 				info.classList.remove("show");
 			}
-			if (prevClickedMarker) {
-				prevClickedMarker.setStyle({color: markerColorDecision(prevClickedMarker.feature), radius: DEFAULT_RADIUS, weight: DEFAULT_WEIGHT});
-				prevClickedMarker = null;
+			if (clickedMarker) {
+				clickedMarker.setStyle({color: markerColorDecision(clickedMarker.feature), radius: defaultRadius, weight: DEFAULT_WEIGHT});
+				clickedMarker = null;
 			}
 		});
 		document.getElementById("mapZoomIn").addEventListener("click", function() {
@@ -144,7 +169,8 @@ function informationUpdate(properties) {
 	document.getElementById("pharmacyName").innerText = properties.name;
 	let rows = info.getElementsByClassName("row");
 	let tags = ["address", "phone", "brand", "stock", "updateTime", "note"];
-	for (let i = 0; i < rows.length; i++) {
+	rows[0].getElementsByClassName("content")[0].innerHTML = "<a href=\"//www.google.com/maps/search/" + properties.name + " " + properties.address + "\">" + properties.address + "</a>";
+	for (let i = 1; i < rows.length; i++) {
 		rows[i].getElementsByClassName("content")[0].innerText = properties[tags[i]];
 	}
 }
