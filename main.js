@@ -10,6 +10,19 @@
 	/* State var define */
 	let prevClickedMarker = null;
 	
+	/* ID card odd or even */
+	
+	let today = new Date();
+	if (today.getDay() === 0) {
+		document.getElementById("limitText").innerText = "無限制";
+	}
+	else if (today.getDay() % 2 === 1) {
+		document.getElementById("limitText").innerText = "單號";
+	}
+	else {
+		document.getElementById("limitText").innerText = "雙號";
+	}
+	
 	/* Load leaflet script from CDN */
 	let script = document.createElement("script");
 	script.src = "//unpkg.com/leaflet@1.8.0/dist/leaflet.js";
