@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name='viewport' content='width=device-width'>
+		<title>臺灣快篩地圖</title>
+		<link rel="stylesheet" href="//unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin>
+		<link rel="preconnect" href="//fonts.googleapis.com">
+		<link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
+		<link href="//fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;900&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="//fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+		<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@latest/pace-theme-default.min.css">
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<div id="panel">
+			<h1 class="site-title">快篩地圖</h1>
+			<div class="legend">
+				<div class="sufficient">50%以上</div>
+				<div class="warning">49%~21%</div>
+				<div class="emergency">20%以下</div>
+			</div>
+			<ul>
+				<li>每 30 秒更新一次資料</li>
+				<li>許多藥局採用號碼牌制，地圖無法得知藥局發放號碼牌的狀況</li>
+				<li>此地圖僅顯示目前尚有存貨的藥局</li>
+				<li>資料來源：<a href="//data.nhi.gov.tw/Datasets/DatasetDetail.aspx?id=698">健康保險資料開放服務</a></li>
+			</ul>
+			<div class="copyright">本地圖由 <a href="//www.facebook.com/kai73002981">Kai</a> 創作</div>
+		</div>
+		<div id="info">
+			<h2 id="pharmacyName"></h2>
+			<div class="row"><span class="material-symbols-outlined">explore</span><span class="content"></span></div>
+			<div class="row"><span class="material-symbols-outlined">settings_phone</span><span class="content"></span></div>
+			<div class="row"><span class="material-symbols-outlined">sell</span><span class="content"></span></div>
+			<div class="row"><span class="material-symbols-outlined">production_quantity_limits</span><span class="content"></span></div>
+			<div class="row"><span class="material-symbols-outlined">update</span><span class="content"></span></div>
+			<div class="row"><span class="material-symbols-outlined">note_alt</span><span class="content"></span></div>
+			<button class="material-symbols-outlined" id="infoPanelClose">close</button>
+		</div>
+		<div id="control-panel">
+			<button class="material-symbols-outlined" id="mapZoomIn">add</button>
+			<button class="material-symbols-outlined" id="mapZoomOut">remove</button>
+			<button class="material-symbols-outlined" id="panelToggle">expand_more</button>
+		</div>
+		<div id="app"></div>
+		<script defer src="main.js"></script>
+		<script defer src="//cdn.jsdelivr.net/npm/pace-js@latest/pace.min.js"></script>
+	</body>
+</html>
