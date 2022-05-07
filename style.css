@@ -1,7 +1,6 @@
 html {
 	color: #351932;
 	font: 16px/1.7 'Noto Sans TC', sans-serif;
-	-webkit-appearance: none;
 }
 body {
 	position: relative;
@@ -24,6 +23,11 @@ a {
 }
 a:hover {
 	border-color: transparent;
+}
+button {
+	-webkit-appearance: none;
+	appearance: none;
+	text-align: center;
 }
 #app {
 	position: fixed;

@@ -23,7 +23,6 @@
 	/* Load leaflet script from CDN */
 	let script = document.createElement("script");
 	script.src = "//unpkg.com/leaflet@1.8.0/dist/leaflet.js";
-	script.defer = true;
 	script.addEventListener("load", function() {
 		/* Start to draw the map */
 		let map = L.map("app", {
@@ -73,7 +72,8 @@
 						});
 						return marker;
 					}
-				}).addTo(map);
+				});
+				dataLayer.addTo(map);
 				
 				/* Periodic update */
 				window.setInterval(function() {
@@ -153,7 +153,7 @@
 					});
 					client.open("get", "fetch.php");
 					client.send();
-				}, 30000);	// 30s
+				}, 30 * 1000);
 				
 				/* Zoom event listener */
 				map.on("zoomend", function(event) {
