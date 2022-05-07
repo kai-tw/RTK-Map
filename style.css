@@ -1,6 +1,7 @@
 html {
 	color: #351932;
 	font: 16px/1.7 'Noto Sans TC', sans-serif;
+	-webkit-appearance: none;
 }
 body {
 	position: relative;
