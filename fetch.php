@@ -22,6 +22,9 @@ $mem = fopen('php://memory', 'r+');
 fwrite($mem, $result);
 rewind($mem);
 fgets($mem); /* skip first row */
+
+$latLngFix = json_decode(file_get_contents('latLng_fix.json'), true);
+
 while (($row = fgets($mem)) !== false) {
 	$row = explode(',', $row);
 	$from = ['０', '１', '２', '３', '４', '５', '６', '７', '８', '９', '－'];
@@ -47,6 +50,9 @@ while (($row = fgets($mem)) !== false) {
 						]
 					]
 				];
+	if (isset($latLngFix[$row[0]])) {	// Manual fix the wrong latitude & longitude
+		$feature['geometry']['coordinates'] = $latLngFix[$row[0]];
+	}
 	$data['features'][] = $feature;
 }
 fclose($mem);
