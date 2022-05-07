@@ -94,34 +94,69 @@
 								});
 							}
 							/* Markers update */
+							let mapMarkers = new Object;
+							let dataMarkers = new Object;
+							
 							map.eachLayer(function(layer) {
 								if (layer.feature) {
-									let markerProperties = layer.feature.properties;
-									let updated = false;
-									data.features.forEach(function(feature) {
-										let properties = feature.properties;
-										if (markerProperties.id === properties.id) {
-											for (let i = 0; i < tags.length; i++) {
-												markerProperties[tags[i]] = properties[tags[i]];
-											}
-											updated = true;
-											return;
-										}
-									});
-									if (!updated) {
-										layer.remove();	// remove the pharmacy which was out of stock
-									}
+									mapMarkers[layer.feature.properties.id] = layer;
 								}
 							});
+							data.features.forEach(function(feature) {
+								dataMarkers[feature.properties.id] = feature;
+							});
+							for (let key in mapMarkers) {
+								if (dataMarkers[key]) {
+									mapMarkers[key].feature.properties = dataMarkers[key].properties;
+									delete dataMarkers[key];
+								}
+								else {
+									mapMarkers[key].remove();
+								}
+							}
+							let featureCollection = [];
+							for (let key in dataMarkers) {
+								featureCollection.push(dataMarkers[key]);
+							}
+							if (featureCollection.length > 0) {
+								L.geoJson(featureCollection, {
+									pointToLayer: function(feature, latLng) {
+										/* Define the style of markers */
+										let markerOption = {
+											alt: feature.properties.name,
+											radius: defaultRadius,
+											color: markerColorDecision(feature),
+											fillColor: markerColorDecision(feature),
+											weight: DEFAULT_WEIGHT,
+											opacity: 1,
+											fillOpacity: 0.75
+										};
+										let marker = L.circleMarker(latLng, markerOption);	/* Create circle marker */
+										marker.on("click", function(event) {				/* Marker click event binding */
+											informationUpdate(event.target.feature.properties);
+											if (!info.classList.contains("show")) {
+												info.classList.add("show");
+											}
+											info.dataset.pharmacyId = event.target.feature.properties.id;
+											if (clickedMarker) {
+												clickedMarker.setStyle({color: markerColorDecision(clickedMarker.feature), radius: defaultRadius, weight: DEFAULT_WEIGHT});
+											}
+											event.target.setStyle({color: FOCUS_COLOR, radius: focusRadius, weight: FOCUS_WEIGHT});
+											event.target.bringToFront();
+											clickedMarker = event.target;
+										});
+										return marker;
+									}
+								}).addTo(map);
+							}
 						}
 					});
 					client.open("get", "fetch.php");
 					client.send();
-				}, 30 * 1000);
+				}, 30000);	// 30s
 				
 				/* Zoom event listener */
 				map.on("zoomend", function(event) {
-					console.log(defaultRadius);
 					mapZoomLvl = event.target._zoom;
 					defaultRadius = mapZoomLvl;
 					focusRadius = defaultRadius * FOCUS_RADIUS_RATIO;
