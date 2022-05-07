@@ -22,7 +22,6 @@
 	
 	/* Load leaflet script from CDN */
 	let script = document.createElement("script");
-	script.src = "//unpkg.com/leaflet@1.8.0/dist/leaflet.js";
 	script.addEventListener("load", function() {
 		/* Start to draw the map */
 		let map = L.map("app", {
@@ -196,6 +195,7 @@
 			this.classList.toggle("active");
 		});
 	});
+	script.src = "//unpkg.com/leaflet@1.8.0/dist/leaflet.js";
 	document.body.appendChild(script);
 }());
 
